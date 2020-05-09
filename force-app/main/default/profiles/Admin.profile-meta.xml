@@ -6,9 +6,4 @@
         <field>Account.CI__c</field>
         <readable>true</readable>
     </fieldPermissions>
-	<fieldPermissions>
-        <editable>true</editable>
-        <field>Account.CD__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
 </Profile>
