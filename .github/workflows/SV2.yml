@@ -66,6 +66,11 @@ jobs:
     - uses: actions/setup-node@v1
       with:
         node-version: '12.x'
+        
+    - name: Extract main branch name
+      shell: bash
+      run: echo "${{ github.ref }}"
+      id: extract_maibranch    
 
     - name: Install Salesforce CLI
       run: |
