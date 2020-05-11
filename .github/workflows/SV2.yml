@@ -19,8 +19,11 @@ jobs:
     - uses: actions/setup-node@v1
       with:
         node-version: '12.x'
-    shell: bash
-      run: echo "${GITHUB_REF}"  
+        
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch 
       
     - name: Install Salesforce CLI
       run: |
