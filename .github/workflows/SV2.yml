@@ -20,12 +20,20 @@ jobs:
       with:
         node-version: '12.x'
         
-    - name: Extract branch name
+    - name: Extract event name
       shell: bash
       run: echo "${{ github.event_name }}"
+      id: extract_evname 
+    
+    - name: Extract branch name
+      shell: bash
       run: echo "${{ github.base_ref }}"
-      run: echo "${{ github.head_ref }}"
       id: extract_branch 
+      
+    - name: Extract head branch name
+      shell: bash
+      run: echo "${{ github.head_ref }}"
+      id: extract_headbranch      
       
     - name: Install Salesforce CLI
       run: |
