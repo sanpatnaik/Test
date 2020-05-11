@@ -1,0 +1,92 @@
+name: CI_QA Org Validation & Deployment
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  #Triggers when there is a Pull Request Validations on CI Org  
+  SCE_Validate_CI:
+    name: CI Validation
+    if: ${{ github.event_name == 'pull_request' && github.base_ref == 'refs/heads/develop' }}
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+
+    - name: Install Salesforce CLI
+      run: |
+        npm install sfdx-cli
+        node_modules/sfdx-cli/bin/run --version
+        node_modules/sfdx-cli/bin/run plugins --core
+      
+    - name: Authenticate CI ORG
+      run: |
+        echo "${SALESFORCE_JWT_SECRET_KEY}" > server.key
+        node_modules/sfdx-cli/bin/run force:auth:jwt:grant --clientid ${{ secrets.CI_CONSUMER_KEY }} --jwtkeyfile server.key --username ${{ secrets.CI_USERNAME}} --instanceurl ${{ secrets.SFDC_SANDBOX_HOST}} 
+      env:
+        SALESFORCE_JWT_SECRET_KEY: ${{ secrets.SALESFORCE_JWT_SECRET_KEY }}
+
+    - name: Validate CI ORG
+      run: node_modules/sfdx-cli/bin/run force:source:deploy -p force-app/main/default -u chand@ci.com -c
+  
+  #Triggers CI deployment when there is a Commit/Push to develop branch.   
+  SCE_Deploy_CI:
+    name: CI Deployment
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+
+    - name: Install Salesforce CLI
+      run: |
+        npm install sfdx-cli
+        node_modules/sfdx-cli/bin/run --version
+        node_modules/sfdx-cli/bin/run plugins --core
+      
+    - name: Authenticate CI ORG
+      run: |
+        echo "${SALESFORCE_JWT_SECRET_KEY}" > server.key
+        node_modules/sfdx-cli/bin/run force:auth:jwt:grant --clientid ${{ secrets.CI_CONSUMER_KEY }} --jwtkeyfile server.key --username ${{ secrets.CI_USERNAME}} --instanceurl ${{ secrets.SFDC_SANDBOX_HOST}} 
+      env:
+        SALESFORCE_JWT_SECRET_KEY: ${{ secrets.SALESFORCE_JWT_SECRET_KEY }}
+
+    - name: Deploy CI ORG
+      run: node_modules/sfdx-cli/bin/run force:source:deploy -p force-app/main/default -u chand@ci.com
+  
+  #Triggers if CI deployment is sucessful & when there is a Commit/Push to SCE develop branch.  
+  SCE_Deploy_QA:
+    name: QA Deployment
+    needs: SCE_Deploy_CI
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop'}}
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+
+    - name: Install Salesforce CLI
+      run: |
+        npm install sfdx-cli
+        node_modules/sfdx-cli/bin/run --version
+        node_modules/sfdx-cli/bin/run plugins --core
+      
+    - name: Authenticate QA ORG
+      run: |
+        echo "${SALESFORCE_JWT_SECRET_KEY}" > server.key
+        node_modules/sfdx-cli/bin/run force:auth:jwt:grant --clientid ${{ secrets.CD_CONSUMER_KEY }} --jwtkeyfile server.key --username ${{ secrets.CD_USERNAME}} --instanceurl ${{ secrets.SFDC_SANDBOX_HOST}} 
+      env:
+        SALESFORCE_JWT_SECRET_KEY: ${{ secrets.SALESFORCE_JWT_SECRET_KEY }}
+
+    - name: QA ORG Deployment
+      run: node_modules/sfdx-cli/bin/run force:source:deploy -p force-app/main/default -u chand@cd.com
