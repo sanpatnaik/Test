@@ -12,7 +12,7 @@ jobs:
   #Triggers when there is a Pull Request Validations on CI Org  
   SCE_Validate_CI:
     name: CI Validation
-    if: ${{ github.event_name == 'pull_request' && github.base_ref == 'refs/heads/develop' }}
+    if: ${{ github.event_name == 'pull_request' && github.head_ref == 'refs/heads/develop' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
