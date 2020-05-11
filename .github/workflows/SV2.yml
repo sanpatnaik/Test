@@ -33,7 +33,12 @@ jobs:
     - name: Extract head branch name
       shell: bash
       run: echo "${{ github.head_ref }}"
-      id: extract_headbranch      
+      id: extract_headbranch 
+      
+    - name: Extract main branch name
+      shell: bash
+      run: echo "${{ github.ref }}"
+      id: extract_mainbranch      
       
     - name: Install Salesforce CLI
       run: |
