@@ -12,8 +12,8 @@ jobs:
   #Triggers when there is a Pull Request Validations on CI Org  
   SCE_Validate_CI:
     name: CI Validation
-    if: ${{ github.event_name == 'pull_request' && github.base_ref == 'refs/heads/develop' }}
-    runs-on: windows-latest
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
@@ -40,7 +40,7 @@ jobs:
   SCE_Deploy_CI:
     name: CI Deployment
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
@@ -68,7 +68,7 @@ jobs:
     name: QA Deployment
     needs: SCE_Deploy_CI
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop'}}
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
