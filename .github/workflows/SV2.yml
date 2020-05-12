@@ -20,7 +20,7 @@ jobs:
       with:
         node-version: '12.x'
         
-    - uses: actions/sfdx-actions/setup-pmd@v1
+    - uses: sfdx-actions/setup-pmd@v1
     - name: run-pmd
       run: pmd -d ./force-app/main/default/classes -R category/apex/design.xml -f text    
     
