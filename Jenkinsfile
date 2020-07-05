@@ -25,7 +25,7 @@ node
                     echo "Client id ${cKey}"
 					echo "UserName is ${uName}"
 					echo "Instance Url is ${hName}"
-			rc1 = sh returnStatus: true, script: "${toolbelt}/sfdx force:auth:logout -p --clientid ${cKey} --username ${uName} --jwtkeyfile \"${JWT_Secret_CRT}\" --instanceurl ${hName}"
+			rc1 = sh returnStatus: true, script: "${toolbelt}/sfdx force:auth:logout --username ${uName}"
                          
 					rc = sh returnStatus: true, script: "${toolbelt}/sfdx force:auth:jwt:grant --clientid ${cKey} --username ${uName} --jwtkeyfile \"${JWT_Secret_CRT}\" --instanceurl ${hName}"
                          if (rc != 0) 
